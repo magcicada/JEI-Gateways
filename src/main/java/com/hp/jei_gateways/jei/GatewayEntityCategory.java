@@ -30,8 +30,8 @@ import java.util.List;
 public class GatewayEntityCategory implements IRecipeCategory<GatewayEntityRecipe> {
     // 配方界面整体尺寸
     public static final RecipeType<GatewayEntityRecipe> TYPE = RecipeType.create(JeiGateways.MODID, "gateway_entities", GatewayEntityRecipe.class);
-    private static final int WIDTH = 210;                    // 界面宽度
-    private static final int HEIGHT = 156;                   // 界面高度
+    private static final int WIDTH = 200;                    // 界面宽度
+    private static final int HEIGHT = 200;                   // 界面高度
 
     // 顶部信息框的位置和尺寸（显示珍珠名称）
     private static final int HEADER_BOX_X = 6;               // 信息框X坐标
@@ -50,7 +50,7 @@ public class GatewayEntityCategory implements IRecipeCategory<GatewayEntityRecip
     private static final int CONTENT_X = 6;                  // 滚动区域X坐标
     private static final int CONTENT_Y = 52;                  // 滚动区域Y坐标
     private static final int CONTENT_WIDTH = 198;             // 滚动区域宽度
-    private static final int CONTENT_HEIGHT = 100;            // 滚动区域高度
+    private static final int CONTENT_HEIGHT = 150;            // 滚动区域高度
 
     // 刷怪蛋网格的起始位置（相对于滚动区域的左上角）
     private static final int EGG_GRID_X = 10;                // 刷怪蛋网格起始X坐标
