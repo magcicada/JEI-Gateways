@@ -24,16 +24,4 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies."${mod_id}"]]
-modId = "jei"
-mandatory = true
-versionRange = "[15.20.0.130,)"
-ordering = "AFTER"
-side = "CLIENT"
 
-[[dependencies."${mod_id}"]]
-modId = "gateways"
-mandatory = true
-versionRange = "[4.2.6,)"
-ordering = "AFTER"
-side = "BOTH"

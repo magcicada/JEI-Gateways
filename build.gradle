@@ -131,15 +131,7 @@ mixin {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
-    flatDir {
-        dir 'libs'
-        dir 'D:/我的世界模组/.minecraft/versions/AAA肉鸽/mods'
-    }
+    maven { url = "https://www.cursemaven.com" }
 }
 
 dependencies {
@@ -150,27 +142,14 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("local:jei-1.20.1-forge:15.20.0.130")
-    runtimeOnly fg.deobf("local:jei-1.20.1-forge:15.20.0.130")
-    compileOnly fg.deobf("local:GatewaysToEternity-1.20.1:4.2.6")
-    runtimeOnly fg.deobf("local:GatewaysToEternity-1.20.1:4.2.6")
-    compileOnly fg.deobf("local:Placebo-1.20.1:8.6.3")
-    runtimeOnly fg.deobf("local:Placebo-1.20.1:8.6.3")
-
-    // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-    // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
-    // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    //永恒之门
+    implementation fg.deobf("curse.maven:mutil-417802:5703251")
+    //placebo
+    implementation fg.deobf("curse.maven:mutil-283644:6274231")
+    //Apothic Attributes
+    implementation fg.deobf("curse.maven:mutil-898963:5634071")
+    //jei
+    implementation fg.deobf("curse.maven:mutil-238222:7920915")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
