@@ -78,6 +78,7 @@ public final class GatewayLootCache {
             GatewayLootRecipe lootRecipe = new GatewayLootRecipe(
                     entityRecipe.gatewayId(),
                     entityRecipe.pearl().copy(),
+                    entityRecipe.pearlTooltipText() == null ? null : entityRecipe.pearlTooltipText().copy(),
                     List.copyOf(outputs),
                     0,
                     1,

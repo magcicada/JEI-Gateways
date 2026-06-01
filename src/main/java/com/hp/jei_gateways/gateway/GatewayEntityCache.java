@@ -103,6 +103,7 @@ public final class GatewayEntityCache {
         Level level = Minecraft.getInstance().level;
         ResourceManager resourceManager = resolveResourceManager();
         LootTableResolver lootTableResolver = new LootTableResolver(resourceManager);
+        GatewayTooltipResolver gatewayTooltipResolver = new GatewayTooltipResolver(resourceManager);
         Map<EntityType<?>, Set<ItemStackKey>> entityLootCache = new IdentityHashMap<>();
         Map<EntityType<?>, List<GatewayEntityRecipe>> byEntity = new HashMap<>();
         Map<ItemStackKey, List<GatewayEntityRecipe>> byItem = new HashMap<>();
@@ -118,6 +119,8 @@ public final class GatewayEntityCache {
             if (gatewayId == null) {
                 continue;
             }
+
+            Component pearlTooltipText = gatewayTooltipResolver.resolveTooltip(gatewayId);
 
             List<WavePage> wavePages = pagesForGateway(gateway, level);
             if (wavePages.isEmpty()) {
@@ -140,6 +143,7 @@ public final class GatewayEntityCache {
                 GatewayEntityRecipe recipe = new GatewayEntityRecipe(
                         gatewayId,
                         pearl.copy(),
+                        pearlTooltipText == null ? null : pearlTooltipText.copy(),
                         wavePage.waveLevel(),
                         wavePages.size(),
                         wavePage.entities().size(),
@@ -388,6 +392,14 @@ public final class GatewayEntityCache {
         return idx >= 0 ? path.substring(idx + 1) : path;
     }
 
+    private static ResourceLocation toGatewayId(ResourceLocation resourceId) {
+        String path = resourceId.getPath();
+        if (!path.startsWith("gateways/") || !path.endsWith(".json")) {
+            return null;
+        }
+        return ResourceLocation.fromNamespaceAndPath(resourceId.getNamespace(), path.substring("gateways/".length(), path.length() - ".json".length()));
+    }
+
     private static ResourceLocation toLootTableId(ResourceLocation resourceId) {
         String path = resourceId.getPath();
         if (!path.startsWith("loot_tables/") || !path.endsWith(".json")) {
@@ -607,6 +619,9 @@ public final class GatewayEntityCache {
     private record LootTableDefinition(Set<ItemStackKey> directItems, Set<ResourceLocation> references) {
     }
 
+    private record GatewayTooltipDefinition(String tooltipKey, String tooltipText) {
+    }
+
     private static final class LootTableResolver {
         private final ResourceManager resourceManager;
         private final Map<ResourceLocation, ResourceLocation> resourceIdsByLootTableId;
@@ -703,6 +718,105 @@ public final class GatewayEntityCache {
             }
             return indexed;
         }
+    }
+
+    private static final class GatewayTooltipResolver {
+        private final ResourceManager resourceManager;
+        private final Map<ResourceLocation, ResourceLocation> resourceIdsByGatewayId;
+        private final Map<ResourceLocation, GatewayTooltipDefinition> definitions = new HashMap<>();
+        private final Map<ResourceLocation, Optional<ResourceLocation>> canonicalIds = new HashMap<>();
+
+        private GatewayTooltipResolver(ResourceManager resourceManager) {
+            this.resourceManager = resourceManager;
+            this.resourceIdsByGatewayId = indexGatewayResources(resourceManager);
+        }
+
+        private Component resolveTooltip(ResourceLocation gatewayId) {
+            String dynamicTooltipText = GatewaysJsCompat.getTooltipText(gatewayId);
+            if (dynamicTooltipText != null) {
+                return Component.literal(dynamicTooltipText);
+            }
+
+            String dynamicTooltipKey = GatewaysJsCompat.getTooltipKey(gatewayId);
+            if (dynamicTooltipKey != null) {
+                return Component.translatable(dynamicTooltipKey);
+            }
+
+            GatewayTooltipDefinition definition = getDefinition(gatewayId);
+            if (definition == null) {
+                return null;
+            }
+            if (definition.tooltipText() != null) {
+                return Component.literal(definition.tooltipText());
+            }
+            if (definition.tooltipKey() != null) {
+                return Component.translatable(definition.tooltipKey());
+            }
+            return null;
+        }
+
+        private GatewayTooltipDefinition getDefinition(ResourceLocation gatewayId) {
+            Optional<ResourceLocation> canonical = canonicalIds.computeIfAbsent(gatewayId, this::findCanonicalGatewayId);
+            return canonical.map(id -> definitions.computeIfAbsent(id, this::loadDefinition)).orElse(null);
+        }
+
+        private GatewayTooltipDefinition loadDefinition(ResourceLocation gatewayId) {
+            ResourceLocation resourceId = resourceIdsByGatewayId.get(gatewayId);
+            if (resourceId == null) {
+                return null;
+            }
+            Optional<Resource> resource = resourceManager.getResource(resourceId);
+            if (resource.isEmpty()) {
+                return null;
+            }
+            try (Reader reader = resource.get().openAsReader()) {
+                JsonElement jsonElement = JsonParser.parseReader(reader);
+                if (!jsonElement.isJsonObject()) {
+                    return null;
+                }
+                JsonObject root = jsonElement.getAsJsonObject();
+                String tooltipText = emptyToNull(getString(root, "tooltipText"));
+                String tooltipKey = emptyToNull(getString(root, "tooltipKey"));
+                return new GatewayTooltipDefinition(tooltipKey, tooltipText);
+            }
+            catch (IOException ignored) {
+                return null;
+            }
+        }
+
+        private Optional<ResourceLocation> findCanonicalGatewayId(ResourceLocation requestedGatewayId) {
+            if (resourceIdsByGatewayId.containsKey(requestedGatewayId)) {
+                return Optional.of(requestedGatewayId);
+            }
+
+            String targetPath = requestedGatewayId.getPath();
+            return resourceIdsByGatewayId.keySet().stream()
+                    .filter(knownId -> knownId.getNamespace().equals(requestedGatewayId.getNamespace()))
+                    .filter(knownId -> {
+                        String knownPath = knownId.getPath();
+                        return knownPath.equals(targetPath)
+                                || knownPath.endsWith("/" + targetPath)
+                                || targetPath.endsWith("/" + knownPath)
+                                || fileName(knownPath).equals(fileName(targetPath));
+                    })
+                    .findFirst();
+        }
+
+        private static Map<ResourceLocation, ResourceLocation> indexGatewayResources(ResourceManager resourceManager) {
+            Map<ResourceLocation, ResourceLocation> indexed = new HashMap<>();
+            Map<ResourceLocation, Resource> resources = resourceManager.listResources("gateways", path -> path.getPath().endsWith(".json"));
+            for (ResourceLocation resourceId : resources.keySet()) {
+                ResourceLocation gatewayId = toGatewayId(resourceId);
+                if (gatewayId != null) {
+                    indexed.put(gatewayId, resourceId);
+                }
+            }
+            return indexed;
+        }
+    }
+
+    private static String emptyToNull(String value) {
+        return value == null || value.isBlank() ? null : value;
     }
 
     public record ItemStackKey(ResourceLocation itemId, CompoundTag tag) {

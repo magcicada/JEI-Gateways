@@ -1,7 +1,7 @@
 package com.hp.jei_gateways.jei;
 
-import com.hp.jei_gateways.JeiGateways;
 import com.hp.jei_gateways.gateway.GatewayEntityRecipe;
+import com.hp.jei_gateways.JeiGateways;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -37,20 +37,20 @@ public class GatewayEntityCategory implements IRecipeCategory<GatewayEntityRecip
     private static final int HEADER_BOX_X = 6;               // 信息框X坐标
     private static final int HEADER_BOX_Y = 14;              // 信息框Y坐标
     private static final int HEADER_BOX_WIDTH = 198;         // 信息框宽度
-    private static final int HEADER_BOX_HEIGHT = 34;         // 信息框高度
+    private static final int HEADER_BOX_HEIGHT = 46;         // 信息框高度
 
     // 珍珠物品槽的位置（相对于信息框左上角）
     private static final int HEADER_TEXT_X = 34;             // 珍珠名称文字的X偏移
     private static final int HEADER_NAME_Y = 8;              // 珍珠名称文字的Y偏移
-    private static final int HEADER_RECIPE_Y = 22;            // 配方波次文字的Y偏移
+    private static final int HEADER_TOOLTIP_Y = 22;          // 珍珠额外提示文字的Y偏移
     private static final int HEADER_SLOT_X = 10;             // 珍珠槽的X偏移
     private static final int HEADER_SLOT_Y = 8;              // 珍珠槽的Y偏移
 
     // 滚动内容区域的位置和尺寸（显示刷怪蛋和波次修饰符）
     private static final int CONTENT_X = 6;                  // 滚动区域X坐标
-    private static final int CONTENT_Y = 52;                  // 滚动区域Y坐标
-    private static final int CONTENT_WIDTH = 198;             // 滚动区域宽度
-    private static final int CONTENT_HEIGHT = 150;            // 滚动区域高度
+    private static final int CONTENT_Y = 64;                 // 滚动区域Y坐标
+    private static final int CONTENT_WIDTH = 198;            // 滚动区域宽度
+    private static final int CONTENT_HEIGHT = 138;           // 滚动区域高度
 
     // 刷怪蛋网格的起始位置（相对于滚动区域的左上角）
     private static final int EGG_GRID_X = 10;                // 刷怪蛋网格起始X坐标
@@ -168,6 +168,9 @@ public class GatewayEntityCategory implements IRecipeCategory<GatewayEntityRecip
         drawPanel(guiGraphics, x, y, width, HEADER_BOX_HEIGHT);
         // 绘制珍珠名称
         guiGraphics.drawString(font, Component.translatable("jei.jei_gateways.name", recipe.pearl().getHoverName()), x + HEADER_TEXT_X, y + HEADER_NAME_Y, 0xFF1F1F1F, false);
+        if (recipe.pearlTooltipText() != null) {
+            guiGraphics.drawString(font, recipe.pearlTooltipText(), x + HEADER_TEXT_X, y + HEADER_TOOLTIP_Y, 0xFF4A4A4A, false);
+        }
     }
 
     /**
@@ -177,7 +180,9 @@ public class GatewayEntityCategory implements IRecipeCategory<GatewayEntityRecip
         tooltip.add(Component.translatable("jei.jei_gateways.name", recipe.pearl().getHoverName()).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("jei.jei_gateways.wave_level", recipe.waveLevel(), recipe.waveCount()).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("jei.jei_gateways.entity_count", recipe.entityCount()).withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("jei.jei_gateways.has_recipe_pages", Component.translatable(JeiGatewaysPlugin.hasOtherRecipePages(recipe.pearl()) ? "jei.jei_gateways.yes" : "jei.jei_gateways.no")).withStyle(ChatFormatting.GRAY));
+        if (recipe.pearlTooltipText() != null) {
+            tooltip.add(recipe.pearlTooltipText().copy().withStyle(ChatFormatting.GRAY));
+        }
     }
 
     /**

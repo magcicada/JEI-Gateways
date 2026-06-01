@@ -107,6 +107,9 @@ public class GatewayLootCategory implements IRecipeCategory<GatewayLootRecipe> {
     private static void addPearlTooltip(GatewayLootRecipe recipe, List<Component> tooltip) {
         tooltip.add(Component.translatable("jei.jei_gateways.name", recipe.pearl().getHoverName()).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("jei.jei_gateways.loot_total", recipe.totalOutputCount()).withStyle(ChatFormatting.GRAY));
+        if (recipe.pearlTooltipText() != null) {
+            tooltip.add(recipe.pearlTooltipText().copy().withStyle(ChatFormatting.GRAY));
+        }
     }
 
     private static void drawSlotFrame(GuiGraphics guiGraphics, int x, int y) {

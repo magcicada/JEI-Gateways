@@ -10,6 +10,7 @@ import java.util.List;
 public record GatewayEntityRecipe(
         ResourceLocation gatewayId,
         ItemStack pearl,
+        Component pearlTooltipText,
         int waveLevel,
         int waveCount,
         int entityCount,

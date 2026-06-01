@@ -4,8 +4,6 @@
   "jei.jei_gateways.name": "Name: %s",
   "jei.jei_gateways.entity_count": "Entity Count: %s",
   "jei.jei_gateways.entity_stack_count": "Count: %s",
-  "jei.jei_gateways.has_recipe_pages": "Possible Crafting Pages: %s",
-  "jei.jei_gateways.has_recipe_pages_label": "Possible Crafting Pages: ",
   "jei.jei_gateways.wave_level": "Wave Level: %s/%s",
   "jei.jei_gateways.wave_entities": "Entities In This Wave:",
   "jei.jei_gateways.wave_modifiers": "Wave Modifiers:",
@@ -13,8 +11,6 @@
   "jei.jei_gateways.modifier.glowing": "Glowing",
   "jei.jei_gateways.modifier.health": "Health: %s",
   "jei.jei_gateways.modifier.effect": "Effect: %s %s",
-  "jei.jei_gateways.yes": "Yes",
-  "jei.jei_gateways.no": "No",
   "jei.jei_gateways.gateway_loot": "Gateway Loot",
   "jei.jei_gateways.loot_page": "Loot Page: %s/%s",
   "jei.jei_gateways.loot_total": "Total: %s"

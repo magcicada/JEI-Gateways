@@ -4,8 +4,6 @@
   "jei.jei_gateways.name": "名称：%s",
   "jei.jei_gateways.entity_count": "实体数量：%s",
   "jei.jei_gateways.entity_stack_count": "数量：%s",
-  "jei.jei_gateways.has_recipe_pages": "是否可能有合成配方：%s",
-  "jei.jei_gateways.has_recipe_pages_label": "是否可能有合成配方：",
   "jei.jei_gateways.wave_level": "此波次等级：%s/%s",
   "jei.jei_gateways.wave_entities": "此波次拥有的实体：",
   "jei.jei_gateways.wave_modifiers": "此波次的加成：",
@@ -13,8 +11,6 @@
   "jei.jei_gateways.modifier.glowing": "发光",
   "jei.jei_gateways.modifier.health": "生命值：%s",
   "jei.jei_gateways.modifier.effect": "效果：%s %s 级",
-  "jei.jei_gateways.yes": "是",
-  "jei.jei_gateways.no": "否",
   "jei.jei_gateways.gateway_loot": "永恒之门战利品",
   "jei.jei_gateways.loot_page": "战利品页：%s/%s",
   "jei.jei_gateways.loot_total": "总计：%s"

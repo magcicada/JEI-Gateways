@@ -1,6 +1,7 @@
 package com.hp.jei_gateways.gateway;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 public record GatewayLootRecipe(
         ResourceLocation gatewayId,
         ItemStack pearl,
+        Component pearlTooltipText,
         List<ItemStack> outputs,
         int pageIndex,
         int pageCount,
