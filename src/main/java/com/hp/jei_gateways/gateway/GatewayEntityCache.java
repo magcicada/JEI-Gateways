@@ -292,48 +292,57 @@ public final class GatewayEntityCache {
         if (level == null) {
             return null;
         }
-        Entity entity = waveEntity.createEntity(level);
-        return entity == null ? null : entity.getType();
+        try {
+            Entity entity = waveEntity.createEntity(level);
+            return entity == null ? null : entity.getType();
+        }
+        catch (RuntimeException e) {
+            return null;
+        }
     }
 
     private static EntityType<?> resolveStoredEntityType(WaveEntity waveEntity) {
-        if (STANDARD_WAVE_ENTITY_TYPE == null) {
+        if (!isStandardWaveEntity(waveEntity, STANDARD_WAVE_ENTITY_TYPE)) {
             return null;
         }
         try {
             Object value = STANDARD_WAVE_ENTITY_TYPE.get(waveEntity);
             return value instanceof EntityType<?> type ? type : null;
         }
-        catch (IllegalAccessException e) {
+        catch (IllegalAccessException | IllegalArgumentException e) {
             return null;
         }
     }
 
     private static CompoundTag resolveStoredEntityTag(WaveEntity waveEntity) {
-        if (STANDARD_WAVE_ENTITY_TAG == null) {
+        if (!isStandardWaveEntity(waveEntity, STANDARD_WAVE_ENTITY_TAG)) {
             return null;
         }
         try {
             Object value = STANDARD_WAVE_ENTITY_TAG.get(waveEntity);
             return value instanceof CompoundTag tag ? tag : null;
         }
-        catch (IllegalAccessException e) {
+        catch (IllegalAccessException | IllegalArgumentException e) {
             return null;
         }
     }
 
     @SuppressWarnings("unchecked")
     private static List<WaveModifier> resolveStoredEntityModifiers(WaveEntity waveEntity) {
-        if (STANDARD_WAVE_ENTITY_MODIFIERS == null) {
+        if (!isStandardWaveEntity(waveEntity, STANDARD_WAVE_ENTITY_MODIFIERS)) {
             return List.of();
         }
         try {
             Object value = STANDARD_WAVE_ENTITY_MODIFIERS.get(waveEntity);
             return value instanceof List<?> list ? (List<WaveModifier>) list : List.of();
         }
-        catch (IllegalAccessException e) {
+        catch (IllegalAccessException | IllegalArgumentException e) {
             return List.of();
         }
+    }
+
+    private static boolean isStandardWaveEntity(WaveEntity waveEntity, Field field) {
+        return field != null && field.getDeclaringClass().isInstance(waveEntity);
     }
 
     private static Set<ItemStackKey> getEntityLootItems(EntityType<?> entityType, LootTableResolver lootTableResolver, Map<EntityType<?>, Set<ItemStackKey>> entityLootCache) {
