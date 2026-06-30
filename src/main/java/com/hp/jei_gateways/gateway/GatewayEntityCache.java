@@ -718,12 +718,17 @@ public final class GatewayEntityCache {
 
         private static Map<ResourceLocation, ResourceLocation> indexLootTableResources(ResourceManager resourceManager) {
             Map<ResourceLocation, ResourceLocation> indexed = new HashMap<>();
-            Map<ResourceLocation, Resource> resources = resourceManager.listResources("loot_tables", path -> path.getPath().endsWith(".json"));
-            for (ResourceLocation resourceId : resources.keySet()) {
-                ResourceLocation lootTableId = toLootTableId(resourceId);
-                if (lootTableId != null) {
-                    indexed.put(lootTableId, resourceId);
+            try {
+                Map<ResourceLocation, Resource> resources = resourceManager.listResources("loot_tables", path -> path.getPath().endsWith(".json"));
+                for (ResourceLocation resourceId : resources.keySet()) {
+                    ResourceLocation lootTableId = toLootTableId(resourceId);
+                    if (lootTableId != null) {
+                        indexed.put(lootTableId, resourceId);
+                    }
                 }
+            } catch (Exception e) {
+                System.err.println("[JEI Gateways Fix] Failed to index some loot tables due to compatibility issue: " + e.getMessage());
+                e.printStackTrace();
             }
             return indexed;
         }
